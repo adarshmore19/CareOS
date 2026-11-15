@@ -77,7 +77,7 @@ export default function ElderlyPage() {
             className="px-6 py-4 rounded-2xl bg-teal-700 text-white hover:bg-teal-800 transition-all font-bold text-lg flex items-center justify-center gap-3 shadow-md border-2 border-teal-800 touch-target"
             aria-label="Read schedule aloud"
           >
-            {speaking ? <VolumeX className="w-7 h-7 text-amber-300 animate-pulse" /> : <Volume2 className="w-7 h-7" />}
+            {speaking ? <VolumeX className="w-7 h-7 text-amber-300" /> : <Volume2 className="w-7 h-7 text-white" />}
             <span>{speaking ? "Stop Voice" : "Read Aloud"}</span>
           </button>
         </div>
@@ -244,7 +244,7 @@ export default function ElderlyPage() {
 
           <a
             href="tel:+15553456789"
-            className="p-4 rounded-2xl bg-purple-700 text-white font-black text-lg hover:bg-purple-800 transition-colors flex items-center justify-center gap-3 shadow-md"
+            className="p-4 rounded-2xl bg-slate-900 text-white font-black text-lg hover:bg-slate-800 transition-colors flex items-center justify-center gap-3 shadow-md"
           >
             <PhoneCall className="w-6 h-6" />
             <span>Call Nurse Priya, RN</span>

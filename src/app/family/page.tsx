@@ -183,10 +183,10 @@ export default function FamilyPage() {
           </div>
 
           {/* Primary Caretaker Contact Block */}
-          <div className="mt-6 pt-4 border-t border-slate-100 bg-purple-50/60 p-4 rounded-xl border border-purple-100">
+          <div className="mt-6 pt-4 border-t border-slate-100 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
                   Assigned Caretaker
                 </span>
                 <h5 className="font-bold text-sm text-slate-900">Nurse Priya Sharma, RN</h5>
@@ -194,7 +194,7 @@ export default function FamilyPage() {
               </div>
               <a
                 href="tel:+15553456789"
-                className="px-3 py-1.5 rounded-lg bg-purple-700 text-white font-bold text-xs flex items-center gap-1 hover:bg-purple-800"
+                className="px-3 py-1.5 rounded-lg bg-slate-900 text-white font-bold text-xs flex items-center gap-1 hover:bg-slate-800"
               >
                 <PhoneCall className="w-3.5 h-3.5" /> Call Nurse
               </a>
