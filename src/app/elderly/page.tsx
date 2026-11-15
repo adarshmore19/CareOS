@@ -14,6 +14,8 @@ import {
   RotateCcw,
 } from "lucide-react";
 import Link from "next/link";
+import { BluetoothHealthDeviceWidget } from "@/components/BluetoothHealthDeviceWidget";
+import { HonestEmptyState } from "@/components/HonestEmptyState";
 
 export default function ElderlyPage() {
   const {
@@ -112,7 +114,15 @@ export default function ElderlyPage() {
           Your Daily Medication Checklist
         </h2>
 
-        {events.map((evt) => {
+        {events.length === 0 ? (
+          <HonestEmptyState
+            title="No Medicines Scheduled Today"
+            description="You have no medicines scheduled for today. Everything is up to date."
+            icon={CheckCircle2}
+            badge="Authentic Checklist • 0 Scheduled Doses"
+          />
+        ) : (
+          events.map((evt) => {
           const isTaken = evt.status === "taken";
           const isSkipped = evt.status === "skipped";
 
@@ -196,8 +206,12 @@ export default function ElderlyPage() {
               </div>
             </div>
           );
-        })}
+        })
+      )}
       </div>
+
+      {/* Real Bluetooth LE Vitals Sensor */}
+      <BluetoothHealthDeviceWidget />
 
       {/* Upcoming Appointment Helper */}
       {nextAppointment && (

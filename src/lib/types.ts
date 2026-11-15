@@ -218,3 +218,72 @@ export interface AdherenceSummary {
   status_assessment: "excellent" | "needs_attention" | "critical";
   last_alert?: string;
 }
+
+// ==========================================
+// AUTHENTIC REAL-WORLD DATA & PROVENANCE TYPES
+// ==========================================
+
+export type EnvironmentMode = "development" | "production";
+
+export interface DataProvenance {
+  source_name: string;
+  source_url: string;
+  source_type: "government_portal" | "clinical_api" | "verified_registry" | "patient_input" | "device_measured";
+  fetched_at: string;
+  published_at?: string;
+  last_verified_at: string;
+  data_version?: string;
+  license?: string;
+  verification_status: "verified" | "patient_submitted" | "device_measured" | "unverified";
+}
+
+export interface VerifiedDrug {
+  rxcui: string;
+  name: string;
+  synonym?: string;
+  dosage_form?: string;
+  brand_names?: string[];
+  active_ingredients?: string[];
+  provenance: DataProvenance;
+}
+
+export interface VerifiedFacility {
+  id: string;
+  name: string;
+  facility_type: "hospital" | "clinic" | "pharmacy" | "emergency_center";
+  address: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  latitude: number;
+  longitude: number;
+  emergency_services: boolean;
+  phone?: string;
+  website?: string;
+  provenance: DataProvenance;
+}
+
+export interface EmergencyContactEntry {
+  id: string;
+  name: string;
+  service_type: "national_emergency" | "ambulance" | "senior_helpline" | "health_helpline" | "mental_health";
+  phone_number: string;
+  description: string;
+  coverage_area: string;
+  hours: string;
+  is_toll_free: boolean;
+  official_authority: string;
+  provenance: DataProvenance;
+}
+
+export interface HealthDeviceReading {
+  id: string;
+  elderly_id: string;
+  device_name: string;
+  device_id?: string;
+  metric_type: "heart_rate" | "blood_pressure_systolic" | "blood_pressure_diastolic" | "oxygen_saturation";
+  value: number;
+  unit: string;
+  measured_at: string;
+  provenance: DataProvenance;
+}

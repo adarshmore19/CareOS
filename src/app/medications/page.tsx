@@ -16,6 +16,8 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { MedicationStatus } from "@/lib/types";
+import { VerifiedMedicationLookup } from "@/components/VerifiedMedicationLookup";
+import { HonestEmptyState } from "@/components/HonestEmptyState";
 
 export default function MedicationsPage() {
   const {
@@ -145,7 +147,15 @@ export default function MedicationsPage() {
         </div>
 
         <div className="space-y-4">
-          {events.map((evt) => {
+          {events.length === 0 ? (
+            <HonestEmptyState
+              title="No Medication Events Scheduled Today"
+              description="There are no scheduled doses for this patient today. Doses will automatically populate when an authentic prescription is added."
+              icon={Pill}
+              badge="Authentic Intake Log • 0 Recorded Doses"
+            />
+          ) : (
+            events.map((evt) => {
             const isTaken = evt.status === "taken";
             const isSkipped = evt.status === "skipped";
 
@@ -217,7 +227,8 @@ export default function MedicationsPage() {
                 </div>
               </div>
             );
-          })}
+          })
+        )}
         </div>
       </div>
 
@@ -235,8 +246,18 @@ export default function MedicationsPage() {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {medications.map((med) => (
+        {medications.length === 0 ? (
+          <HonestEmptyState
+            title="No Active Prescriptions Found"
+            description="There are currently no authentic medications prescribed for this patient. Add a prescription using the verified RxNorm drug database lookup."
+            actionLabel="Add Verified Medication"
+            onAction={() => setShowAddModal(true)}
+            icon={Pill}
+            badge="Authentic State • Zero Fabricated Prescriptions"
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {medications.map((med) => (
             <div key={med.id} className="p-5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-teal-300 transition-all">
               <div className="flex items-start justify-between">
                 <div>
@@ -261,26 +282,34 @@ export default function MedicationsPage() {
             </div>
           ))}
         </div>
+      )}
       </div>
 
       {/* Add Medication Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <Pill className="w-5 h-5 text-teal-600" />
-                <h3 className="font-bold text-lg text-slate-900">Add New Medication Regimen</h3>
+                <h3 className="font-bold text-lg text-slate-900">Add Authentic Medication Regimen</h3>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-600 p-1 font-bold"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleCreateMedication} className="space-y-4">
+            <VerifiedMedicationLookup
+              onSelectDrug={(drug) => {
+                setName(drug.name);
+                setInstructions(`Verified RxNorm active monograph (RxCUI: ${drug.rxcui}).`);
+              }}
+            />
+
+            <form onSubmit={handleCreateMedication} className="space-y-4 pt-2 border-t border-slate-100">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
                   Medication Name *

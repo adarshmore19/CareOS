@@ -22,6 +22,8 @@ import {
   HelpCircle,
 } from "lucide-react";
 import Link from "next/link";
+import { OfficialEmergencyDirectory } from "@/components/OfficialEmergencyDirectory";
+import { HonestEmptyState } from "@/components/HonestEmptyState";
 
 export default function FamilyPage() {
   const {
@@ -43,7 +45,7 @@ export default function FamilyPage() {
     currentUser,
   } = useCare();
 
-  const [activeTab, setActiveTab] = useState<"overview" | "meds" | "timeline" | "notifications" | "members">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "meds" | "timeline" | "notifications" | "members" | "emergency">("overview");
 
   // Invite modal state
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -69,6 +71,30 @@ export default function FamilyPage() {
   const patientTasks = careTasks.filter((t) => t.elderly_id === activePatient.id);
   const patientNotes = clinicalNotes.filter((n) => n.elderly_id === activePatient.id);
   const patientLogs = activityLogs.filter((l) => l.elderly_id === activePatient.id);
+
+  if (elderlyProfiles.length === 0) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8">
+        <div className="border-b border-slate-200 pb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold mb-2">
+            <Users className="w-3.5 h-3.5 text-slate-600" />
+            <span>FamilyCare Portal</span>
+          </div>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Family Care Circle</h1>
+          <p className="text-slate-600 text-sm mt-1">Multi-patient monitoring & family circle coordination</p>
+        </div>
+        <HonestEmptyState
+          title="No Linked Patient Records"
+          description="There are currently no authorized elderly patients linked to your family care account. Have the patient or primary caregiver send you an invitation or register an authentic patient profile."
+          icon={Users}
+          badge="Authentic State • Zero Fabricated Patients"
+        />
+        <div className="mt-8">
+          <OfficialEmergencyDirectory />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8">
@@ -154,6 +180,7 @@ export default function FamilyPage() {
           { key: "timeline", label: `Activity Feed (${patientLogs.length})` },
           { key: "notifications", label: `Alerts (${notifications.length})` },
           { key: "members", label: "Family Circle & Access" },
+          { key: "emergency", label: "Govt Emergency Helplines" },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -444,6 +471,13 @@ export default function FamilyPage() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* TAB 6: OFFICIAL EMERGENCY DIRECTORY */}
+      {activeTab === "emergency" && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <OfficialEmergencyDirectory />
         </div>
       )}
 

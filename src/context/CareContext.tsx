@@ -48,6 +48,11 @@ interface CareContextType {
   activePatient: ElderlyProfile;
   elderlyProfile: ElderlyProfile;
   setActivePatientId: (id: string) => void;
+  registerElderlyPatient: (data: Omit<ElderlyProfile, "id">) => Promise<ElderlyProfile>;
+
+  // Environment & Authentic Data Mode
+  dataMode: "demo" | "authentic";
+  setDataMode: (mode: "demo" | "authentic") => void;
 
   // Data Collections
   medications: Medication[];
@@ -81,7 +86,19 @@ const CareContext = createContext<CareContextType | undefined>(undefined);
 
 const STORAGE_KEY_PREFIX = "careos_data_v2_";
 
+const EMPTY_PATIENT_FALLBACK: ElderlyProfile = {
+  id: "none",
+  user_id: "",
+  full_name: "No Patient Record Available",
+  emergency_contact_name: "Not Configured",
+  emergency_contact_phone: "",
+  address: "Not Provided",
+  medical_notes: "No medical records recorded yet. Register an authentic patient or connect with family.",
+  daily_checkin_status: "pending",
+};
+
 export function CareProvider({ children }: { children: React.ReactNode }) {
+  const [dataMode, setDataModeState] = useState<"demo" | "authentic">("demo");
   const [currentRole, setCurrentRole] = useState<UserRole>("elderly");
   const [currentUser, setCurrentUser] = useState<UserProfile>(INITIAL_PROFILES[0]);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -173,10 +190,79 @@ export function CareProvider({ children }: { children: React.ReactNode }) {
     },
   ]);
 
-  const activePatient =
-    elderlyProfiles.find((p) => p.id === activePatientId) || elderlyProfiles[0];
+  const setDataMode = useCallback((mode: "demo" | "authentic") => {
+    setDataModeState(mode);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("careos_data_mode", mode);
+    }
+    if (mode === "authentic") {
+      try {
+        const saved = localStorage.getItem("careos_authentic_patients");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setElderlyProfiles(parsed);
+          setActivePatientId(parsed[0]?.id || "");
+        } else {
+          setElderlyProfiles([]);
+          setActivePatientId("");
+        }
+      } catch (e) {
+        setElderlyProfiles([]);
+        setActivePatientId("");
+      }
+      setEvents([]);
+      setMedications([]);
+      setAppointments([]);
+      setCareTasks([]);
+      setClinicalNotes([]);
+      setActivityLogs([]);
+    } else {
+      setElderlyProfiles([
+        INITIAL_ELDERLY,
+        {
+          id: "elderly-2",
+          user_id: "user-elderly-2",
+          full_name: "Arthur Pendelton",
+          date_of_birth: "1944-09-21",
+          blood_group: "A+",
+          emergency_contact_name: "Sarah Pendelton (Daughter)",
+          emergency_contact_phone: "+1 (555) 901-2345",
+          address: "12 Pinecrest Way, Springfield",
+          medical_notes: "Chronic Kidney Disease Stage 3, Osteoarthritis. Sodium-restricted diet.",
+          daily_checkin_status: "completed",
+        },
+      ]);
+      setActivePatientId("elderly-1");
+      setEvents(INITIAL_TODAY_EVENTS);
+      setMedications(INITIAL_MEDICATIONS);
+      setAppointments(INITIAL_APPOINTMENTS);
+      setCareTasks(INITIAL_CARE_TASKS);
+      setNotifications(INITIAL_NOTIFICATIONS);
+    }
+  }, []);
 
-  const adherence = calculateAdherence(events.filter((e) => e.elderly_id === activePatient.id));
+  const registerElderlyPatient = useCallback(async (data: Omit<ElderlyProfile, "id">): Promise<ElderlyProfile> => {
+    const newId = `patient-${Date.now()}`;
+    const newPatient: ElderlyProfile = {
+      ...data,
+      id: newId,
+    };
+    const updated = [...elderlyProfiles, newPatient];
+    setElderlyProfiles(updated);
+    setActivePatientId(newId);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("careos_authentic_patients", JSON.stringify(updated));
+    }
+    return newPatient;
+  }, [elderlyProfiles]);
+
+  const activePatient =
+    elderlyProfiles.find((p) => p.id === activePatientId) ||
+    (elderlyProfiles.length > 0 ? elderlyProfiles[0] : EMPTY_PATIENT_FALLBACK);
+
+  const adherence = calculateAdherence(
+    activePatient.id !== "none" ? events.filter((e) => e.elderly_id === activePatient.id) : []
+  );
 
   // Initialize and check Supabase session
   useEffect(() => {
@@ -628,6 +714,9 @@ export function CareProvider({ children }: { children: React.ReactNode }) {
         activePatient,
         elderlyProfile: activePatient,
         setActivePatientId,
+        registerElderlyPatient,
+        dataMode,
+        setDataMode,
         medications,
         events,
         appointments,

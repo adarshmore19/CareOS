@@ -13,6 +13,8 @@ import {
   ListTodo,
 } from "lucide-react";
 import { TaskPriority, TaskStatus } from "@/lib/types";
+import { VerifiedHospitalLookup } from "@/components/VerifiedHospitalLookup";
+import { HonestEmptyState } from "@/components/HonestEmptyState";
 
 export default function AppointmentsPage() {
   const {
@@ -129,7 +131,17 @@ export default function AppointmentsPage() {
             </h2>
 
             <div className="space-y-4">
-              {upcomingApts.map((apt) => (
+              {upcomingApts.length === 0 ? (
+                <HonestEmptyState
+                  title="No Upcoming Appointments Scheduled"
+                  description="No clinical appointments are currently on the calendar for this patient. Schedule a visit with a verified hospital or clinic."
+                  actionLabel="Schedule Appointment"
+                  onAction={() => setShowAptModal(true)}
+                  icon={Calendar}
+                  badge="Authentic Schedule • 0 Pending Visits"
+                />
+              ) : (
+                upcomingApts.map((apt) => (
                 <div
                   key={apt.id}
                   className="p-5 rounded-2xl border-2 border-indigo-100 bg-indigo-50/30 hover:border-indigo-300 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
@@ -163,7 +175,8 @@ export default function AppointmentsPage() {
                     )}
                   </div>
                 </div>
-              ))}
+              ))
+            )}
             </div>
           </div>
 
@@ -201,7 +214,16 @@ export default function AppointmentsPage() {
             </div>
 
             <div className="space-y-3">
-              {careTasks.map((t) => {
+              {careTasks.length === 0 ? (
+                <HonestEmptyState
+                  title="No Care Tasks Assigned"
+                  description="All care duties are complete or none are currently assigned to this patient."
+                  actionLabel="Add Care Task"
+                  onAction={() => setShowTaskModal(true)}
+                  badge="Authentic Duties Checklist"
+                />
+              ) : (
+                careTasks.map((t) => {
                 const isDone = t.status === "completed";
                 const priorityBadge =
                   t.priority === "urgent"
@@ -240,7 +262,8 @@ export default function AppointmentsPage() {
                     </div>
                   </div>
                 );
-              })}
+              })
+            )}
             </div>
           </div>
         </div>
@@ -249,13 +272,19 @@ export default function AppointmentsPage() {
       {/* Schedule Appointment Modal */}
       {showAptModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="font-bold text-lg text-slate-900">Schedule Medical Appointment</h3>
-              <button onClick={() => setShowAptModal(false)} className="text-slate-400 hover:text-slate-600">✕</button>
+              <button onClick={() => setShowAptModal(false)} className="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
             </div>
 
-            <form onSubmit={handleCreateAppointment} className="space-y-4">
+            <VerifiedHospitalLookup
+              onSelectFacility={(fac) => {
+                setClinic(`${fac.name}, ${fac.address}`);
+              }}
+            />
+
+            <form onSubmit={handleCreateAppointment} className="space-y-4 pt-2 border-t border-slate-100">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">Doctor Name *</label>
                 <input

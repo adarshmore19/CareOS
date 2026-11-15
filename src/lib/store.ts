@@ -423,7 +423,7 @@ export function calculateAdherence(events: MedicationEvent[]): AdherenceSummary 
   const total = events.length;
   if (total === 0) {
     return {
-      overall_percentage: 100,
+      overall_percentage: 0,
       total_doses: 0,
       taken_count: 0,
       missed_count: 0,
@@ -431,6 +431,7 @@ export function calculateAdherence(events: MedicationEvent[]): AdherenceSummary 
       unconfirmed_count: 0,
       weekly_trend: [],
       status_assessment: "excellent",
+      last_alert: "No medication events scheduled or recorded yet.",
     };
   }
 

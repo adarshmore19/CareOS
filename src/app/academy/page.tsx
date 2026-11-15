@@ -13,6 +13,7 @@ import {
   Award,
   ArrowRight,
 } from "lucide-react";
+import { PublicHealthBenchmarks } from "@/components/PublicHealthBenchmarks";
 
 export default function AcademyPage() {
   const { articles } = useCare();
@@ -275,6 +276,11 @@ export default function AcademyPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Verified Public Health Benchmarks */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs">
+        <PublicHealthBenchmarks />
       </div>
     </div>
   );

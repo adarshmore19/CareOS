@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCare } from "@/context/CareContext";
 import { UserRole } from "@/lib/types";
+import { EnvironmentBanner } from "@/components/EnvironmentBanner";
 import {
   Heart,
   Pill,
@@ -53,6 +54,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-slate-200">
+      <EnvironmentBanner />
       {/* Top Banner: Role Context & Persona Switcher */}
       <div className="bg-slate-900 text-slate-200 text-xs py-2 px-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">

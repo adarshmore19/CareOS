@@ -12,6 +12,8 @@ import {
   Send,
   HelpCircle,
 } from "lucide-react";
+import { BluetoothHealthDeviceWidget } from "@/components/BluetoothHealthDeviceWidget";
+import { HonestEmptyState } from "@/components/HonestEmptyState";
 
 export default function AdherencePage() {
   const { adherence, events, addNotification, elderlyProfile } = useCare();
@@ -155,6 +157,9 @@ export default function AdherencePage() {
           ))}
         </div>
       </div>
+
+      {/* Authentic Hardware Device Integration */}
+      <BluetoothHealthDeviceWidget />
 
       {/* Explanatory Clinical Guardrail */}
       <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex items-start gap-4">
