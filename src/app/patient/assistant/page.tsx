@@ -226,3 +226,4 @@ export default function PatientAssistantPage() {
     </div>
   );
 }
+
