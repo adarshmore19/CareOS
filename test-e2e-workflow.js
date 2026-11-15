@@ -1,12 +1,13 @@
 const http = require("http");
+const PORT = process.argv[2] || 3000;
 
 async function postQuery(query) {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({ query, role: "elderly" });
     const req = http.request(
       {
-        hostname: "localhost",
-        port: 3000,
+        hostname: "127.0.0.1",
+        port: PORT,
         path: "/api/assistant",
         method: "POST",
         headers: {
