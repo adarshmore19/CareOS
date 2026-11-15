@@ -6,7 +6,7 @@ export type AppointmentStatus = "upcoming" | "completed" | "cancelled";
 
 export type TaskPriority = "low" | "medium" | "high" | "urgent";
 
-export type TaskStatus = "pending" | "in_progress" | "completed";
+export type TaskStatus = "pending" | "in_progress" | "completed" | "cancelled" | "overdue";
 
 export type NotificationType = "adherence_alert" | "appointment_reminder" | "care_task_assigned" | "emergency";
 
@@ -30,6 +30,25 @@ export interface ElderlyProfile {
   address?: string;
   medical_notes?: string;
   daily_checkin_status: "pending" | "completed";
+}
+
+export interface FamilyMembership {
+  id: string;
+  elderly_id: string;
+  family_user_id: string;
+  relationship: string;
+  can_edit_meds: boolean;
+  created_at: string;
+}
+
+export interface CaretakerAssignment {
+  id: string;
+  elderly_id: string;
+  caretaker_id: string;
+  role_title: string;
+  contact_number?: string;
+  is_primary: boolean;
+  created_at: string;
 }
 
 export interface MedicationSchedule {
@@ -103,6 +122,66 @@ export interface NotificationItem {
   message: string;
   is_read: boolean;
   link?: string;
+  created_at: string;
+}
+
+export interface ClinicalNote {
+  id: string;
+  elderly_id: string;
+  author_id: string;
+  author_name?: string;
+  observation: string;
+  action_taken?: string;
+  follow_up_required: boolean;
+  follow_up_date?: string;
+  related_appointment_id?: string;
+  related_task_id?: string;
+  is_amended: boolean;
+  amendment_note?: string;
+  created_at: string;
+}
+
+export interface PatientConsent {
+  id: string;
+  elderly_id: string;
+  granted_to: string;
+  consent_type: "medical_records" | "medication_administration" | "appointment_coordination" | "emergency_access";
+  is_active: boolean;
+  granted_at: string;
+  revoked_at?: string;
+}
+
+export interface NotificationPreferences {
+  id: string;
+  user_id: string;
+  in_app_adherence: boolean;
+  in_app_appointments: boolean;
+  in_app_tasks: boolean;
+  email_alerts: boolean;
+  sms_alerts: boolean;
+}
+
+export interface FamilyInvitation {
+  id: string;
+  elderly_id: string;
+  invited_email: string;
+  invited_by: string;
+  relationship: string;
+  can_edit_meds: boolean;
+  token: string;
+  status: "pending" | "accepted" | "rejected" | "revoked";
+  created_at: string;
+  expires_at: string;
+}
+
+export interface ActivityLog {
+  id: string;
+  elderly_id: string;
+  actor_id?: string;
+  actor_name?: string;
+  action_type: string;
+  description: string;
+  metadata?: Record<string, unknown>;
   created_at: string;
 }
 
