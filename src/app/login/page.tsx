@@ -271,16 +271,16 @@ export default function LoginPage() {
         <div className="space-y-2">
           <button
             type="button"
-            onClick={() => handleSelectDemoPersona("elderly", "/elderly")}
+            onClick={() => handleSelectDemoPersona("elderly", "/patient/dashboard")}
             className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-teal-50/70 hover:border-teal-400 transition-all text-left flex items-center justify-between group"
           >
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-teal-700 text-white flex items-center justify-center font-bold text-xs">
-                EV
+                RS
               </div>
               <div>
-                <h4 className="font-bold text-xs text-slate-900">Eleanor Vance</h4>
-                <p className="text-[11px] text-slate-500">Patient • High-Readability Portal</p>
+                <h4 className="font-bold text-xs text-slate-900">Ram Sharma</h4>
+                <p className="text-[11px] text-slate-500">Patient • High-Readability Accessible Dashboard</p>
               </div>
             </div>
             <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-teal-700 group-hover:translate-x-1 transition-all" />
@@ -288,16 +288,16 @@ export default function LoginPage() {
 
           <button
             type="button"
-            onClick={() => handleSelectDemoPersona("family", "/family")}
+            onClick={() => handleSelectDemoPersona("family", "/family/dashboard")}
             className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-all text-left flex items-center justify-between group"
           >
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-slate-800 text-white flex items-center justify-center font-bold text-xs">
-                DV
+                PS
               </div>
               <div>
-                <h4 className="font-bold text-xs text-slate-900">David Vance</h4>
-                <p className="text-[11px] text-slate-500">Family Member • FamilyCare Portal</p>
+                <h4 className="font-bold text-xs text-slate-900">Priya Sharma</h4>
+                <p className="text-[11px] text-slate-500">Family Member • FamilyCare Monitoring Dashboard</p>
               </div>
             </div>
             <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-800 group-hover:translate-x-1 transition-all" />
@@ -305,16 +305,16 @@ export default function LoginPage() {
 
           <button
             type="button"
-            onClick={() => handleSelectDemoPersona("caretaker", "/caretaker")}
+            onClick={() => handleSelectDemoPersona("caretaker", "/caretaker/dashboard")}
             className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-all text-left flex items-center justify-between group"
           >
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold text-xs">
-                RN
+                SS
               </div>
               <div>
-                <h4 className="font-bold text-xs text-slate-900">Nurse Priya Sharma, RN</h4>
-                <p className="text-[11px] text-slate-500">Licensed Caregiver • Clinical Workspace</p>
+                <h4 className="font-bold text-xs text-slate-900">Sister Sunita, RN</h4>
+                <p className="text-[11px] text-slate-500">Clinical Caregiver • Operations & MAR Dashboard</p>
               </div>
             </div>
             <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />

@@ -118,7 +118,7 @@ export default function PatientWorkspacePage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
         <div>
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
-            <Link href="/caretaker" className="hover:underline">Caretaker</Link>
+            <Link href="/caretaker/dashboard" className="hover:underline">Caretaker</Link>
             <span>/</span>
             <Link href="/caretaker/patients" className="hover:underline">Patients</Link>
             <span>/</span>

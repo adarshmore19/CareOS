@@ -166,3 +166,4 @@ export function BluetoothHealthDeviceWidget() {
     </div>
   );
 }
+

@@ -53,6 +53,8 @@ interface CareContextType {
   // Environment & Authentic Data Mode
   dataMode: "demo" | "authentic";
   setDataMode: (mode: "demo" | "authentic") => void;
+  dbMode: "clean" | "seed";
+  setDbMode: (mode: "clean" | "seed") => void;
 
   // Data Collections
   medications: Medication[];
@@ -68,7 +70,8 @@ interface CareContextType {
   adherence: AdherenceSummary;
 
   // Actions
-  confirmMedication: (eventId: string, status: MedicationStatus, notes?: string) => Promise<void>;
+  confirmMedication: (eventId: string, status?: MedicationStatus, notes?: string) => Promise<void>;
+  skipMedication: (eventId: string, notes?: string) => Promise<void>;
   addMedication: (med: Omit<Medication, "id">) => Promise<void>;
   addAppointment: (apt: Omit<Appointment, "id">) => Promise<void>;
   addCareTask: (task: Omit<CareTask, "id">) => Promise<void>;
@@ -110,6 +113,9 @@ export function CareProvider({ children }: { children: React.ReactNode }) {
       id: "elderly-2",
       user_id: "user-elderly-2",
       full_name: "Arthur Pendelton",
+      name: "Arthur Pendelton",
+      age: 81,
+      city: "Springfield",
       date_of_birth: "1944-09-21",
       blood_group: "A+",
       emergency_contact_name: "Sarah Pendelton (Daughter)",
@@ -458,7 +464,7 @@ export function CareProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Confirm Medication
-  const confirmMedication = async (eventId: string, status: MedicationStatus, notes?: string) => {
+  const confirmMedication = async (eventId: string, status: MedicationStatus = "taken", notes?: string) => {
     const nowTime = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 
     // Update locally / optimistic
@@ -507,6 +513,10 @@ export function CareProvider({ children }: { children: React.ReactNode }) {
         }),
       }).catch(() => {});
     }
+  };
+
+  const skipMedication = async (eventId: string, notes?: string) => {
+    return confirmMedication(eventId, "skipped", notes);
   };
 
   // Add Medication
@@ -579,8 +589,12 @@ export function CareProvider({ children }: { children: React.ReactNode }) {
     const newNote: ClinicalNote = {
       ...note,
       id: "note-" + Date.now(),
-      author_id: currentUser.id,
-      author_name: currentUser.full_name,
+      author_id: note.author_id || currentUser.id,
+      author_name: note.author_name || note.caretaker_name || currentUser.full_name,
+      caretaker_name: note.caretaker_name || currentUser.full_name,
+      observation: note.observation || note.content || "Clinical check performed",
+      content: note.content || note.observation || "Clinical check performed",
+      follow_up_required: note.follow_up_required ?? false,
       is_amended: false,
       created_at: new Date().toISOString(),
     };
@@ -717,6 +731,8 @@ export function CareProvider({ children }: { children: React.ReactNode }) {
         registerElderlyPatient,
         dataMode,
         setDataMode,
+        dbMode: dataMode === "authentic" ? "clean" : "seed",
+        setDbMode: (mode: "clean" | "seed") => setDataModeState(mode === "clean" ? "authentic" : "demo"),
         medications,
         events,
         appointments,
@@ -729,6 +745,7 @@ export function CareProvider({ children }: { children: React.ReactNode }) {
         activityLogs,
         adherence,
         confirmMedication,
+        skipMedication,
         addMedication,
         addAppointment,
         addCareTask,

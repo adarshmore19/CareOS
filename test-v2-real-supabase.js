@@ -12,10 +12,11 @@
  */
 
 const http = require("http");
+const PORT = process.argv[2] || 3000;
 
 function request(method, path, body = null, headers = {}) {
   return new Promise((resolve, reject) => {
-    const url = new URL(`http://localhost:3000${path}`);
+    const url = new URL(`http://127.0.0.1:${PORT}${path}`);
     const reqHeaders = {
       "Content-Type": "application/json",
       ...headers,
@@ -93,22 +94,32 @@ async function runTests() {
       `Rejects registration with missing required password/role (Status: ${resMissingFields.status})`
     );
 
-    // 1c: Valid role registration format (family)
+    // 1c: Valid role registration format (caretaker)
+    const testEmail = `nurse.${Date.now()}@careos.health`;
+    const testPassword = "SecurePassword123!";
     const resValidReg = await request("POST", "/api/auth/register", {
-      email: "sarah.vance.test@example.com",
-      password: "SecurePassword123!",
-      full_name: "Sarah Vance",
-      role: "family",
+      email: testEmail,
+      password: testPassword,
+      full_name: "Nurse Priya Sharma",
+      role: "caretaker",
     });
     // In dual mode without live Supabase credentials, returns 200 with simulated account or creates record
+    if (resValidReg.status !== 200 && resValidReg.status !== 201) {
+      console.log("Registration error data:", resValidReg.data);
+    }
     assert(
       resValidReg.status === 200 || resValidReg.status === 201,
       `Valid registration succeeds or simulates safely (Status: ${resValidReg.status})`
     );
+
+    // Save credentials for login test
+    global.testEmail = testEmail;
+    global.testPassword = testPassword;
   }
 
   // TEST 2: Login API
   console.log("\n[2] Login & Me Endpoints");
+  let authHeaders = {};
   {
     const resLoginMissing = await request("POST", "/api/auth/login", {
       email: "test@example.com",
@@ -120,15 +131,22 @@ async function runTests() {
     );
 
     const resLoginValid = await request("POST", "/api/auth/login", {
-      email: "eleanor.vance@careos.health",
-      password: "demo-password-123",
+      email: global.testEmail || "eleanor.vance@careos.health",
+      password: global.testPassword || "demo-password-123",
     });
     assert(
       resLoginValid.status === 200 || resLoginValid.status === 401,
       `Login endpoint responds with structured payload (Status: ${resLoginValid.status})`
     );
 
-    const resMe = await request("GET", "/api/auth/me");
+    if (resLoginValid.headers && resLoginValid.headers["set-cookie"]) {
+      const cookies = Array.isArray(resLoginValid.headers["set-cookie"])
+        ? resLoginValid.headers["set-cookie"]
+        : [resLoginValid.headers["set-cookie"]];
+      authHeaders = { Cookie: cookies.map((c) => c.split(";")[0]).join("; ") };
+    }
+
+    const resMe = await request("GET", "/api/auth/me", null, authHeaders);
     assert(
       resMe.status === 200,
       `Session me endpoint returns valid user structure (Status: ${resMe.status})`
@@ -158,7 +176,7 @@ async function runTests() {
       dosage_administered: "10mg",
       caretaker_notes: "Administered with morning porridge and fresh water.",
       caretaker_id: "user-caretaker-1",
-    });
+    }, authHeaders);
     assert(
       resMedSuccess.status === 200 || resMedSuccess.status === 201,
       `Successfully records medication administration (Status: ${resMedSuccess.status})`
@@ -172,7 +190,7 @@ async function runTests() {
       status: "taken",
       taken_at: new Date().toISOString(),
       dosage_administered: "10mg",
-    });
+    }, authHeaders);
     assert(
       resMedDuplicate.status === 409 || resMedDuplicate.status === 200,
       `Handles duplicate administration check gracefully (Status: ${resMedDuplicate.status})`
@@ -190,7 +208,7 @@ async function runTests() {
       observation: "Test vitals: Blood glucose 105 mg/dL. Skin turgor normal.",
       action_taken: "Provided routine mid-morning snack.",
       follow_up_required: false,
-    });
+    }, authHeaders);
     assert(
       resNote.status === 200 || resNote.status === 201,
       `Clinical note successfully logged (Status: ${resNote.status})`
@@ -203,14 +221,14 @@ async function runTests() {
       note_id: noteId,
       amendment_note: "Amendment: Clarified reading was taken 2h post-prandial.",
       amended_by: "user-caretaker-1",
-    });
+    }, authHeaders);
     assert(
       resAmend.status === 200,
       `Clinical note amendment recorded in audit trail (Status: ${resAmend.status})`
     );
 
     // 4c: Fetch notes
-    const resGetNotes = await request("GET", "/api/caretaker/notes?elderly_id=elderly-1");
+    const resGetNotes = await request("GET", "/api/caretaker/notes?elderly_id=elderly-1", null, authHeaders);
     assert(
       resGetNotes.status === 200 && Array.isArray(resGetNotes.data?.notes),
       `Fetch clinical notes for patient returns array (Status: ${resGetNotes.status})`
@@ -227,7 +245,7 @@ async function runTests() {
       description: "Measure SpO2 after light afternoon walk.",
       priority: "medium",
       due_date: new Date().toISOString().split("T")[0],
-    });
+    }, authHeaders);
     assert(
       resTask.status === 200 || resTask.status === 201,
       `Care task created successfully (Status: ${resTask.status})`
@@ -239,7 +257,7 @@ async function runTests() {
     const resTaskUpdate = await request("PATCH", "/api/caretaker/tasks", {
       task_id: taskId,
       status: "completed",
-    });
+    }, authHeaders);
     assert(
       resTaskUpdate.status === 200,
       `Care task status updated to completed (Status: ${resTaskUpdate.status})`
@@ -254,13 +272,13 @@ async function runTests() {
       invited_email: "daughter.vance@example.com",
       relationship: "Daughter",
       can_edit_meds: false,
-    });
+    }, authHeaders);
     assert(
       resInvite.status === 200 || resInvite.status === 201,
       `Family invitation issued with permission boundary (Status: ${resInvite.status})`
     );
 
-    const resListInvites = await request("GET", "/api/family/invitations?elderly_id=elderly-1");
+    const resListInvites = await request("GET", "/api/family/invitations?elderly_id=elderly-1", null, authHeaders);
     assert(
       resListInvites.status === 200,
       `List family invitations returns active list (Status: ${resListInvites.status})`

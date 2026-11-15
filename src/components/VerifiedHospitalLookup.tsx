@@ -5,7 +5,7 @@ import { VerifiedFacility } from "@/lib/types";
 import { Search, Building2, MapPin, ShieldCheck, Loader2, Navigation } from "lucide-react";
 
 interface VerifiedHospitalLookupProps {
-  onSelectFacility: (facility: {
+  onSelectFacility?: (facility: {
     name: string;
     address: string;
     latitude: number;
@@ -110,13 +110,15 @@ export function VerifiedHospitalLookup({ onSelectFacility }: VerifiedHospitalLoo
             <div
               key={fac.id}
               onClick={() => {
-                onSelectFacility({
-                  name: fac.name,
-                  address: fac.address,
-                  latitude: fac.latitude,
-                  longitude: fac.longitude,
-                  source: "OpenStreetMap Verified Healthcare Registry",
-                });
+                if (onSelectFacility) {
+                  onSelectFacility({
+                    name: fac.name,
+                    address: fac.address,
+                    latitude: fac.latitude,
+                    longitude: fac.longitude,
+                    source: "OpenStreetMap Verified Healthcare Registry",
+                  });
+                }
               }}
               className="p-2.5 rounded-xl bg-white border border-slate-200 hover:border-teal-500 hover:bg-teal-50/50 cursor-pointer transition-all flex items-start justify-between gap-3 group"
             >
@@ -131,9 +133,15 @@ export function VerifiedHospitalLookup({ onSelectFacility }: VerifiedHospitalLoo
                 </div>
               </div>
 
-              <span className="text-[10px] font-bold text-teal-700 bg-teal-100 px-2 py-0.5 rounded group-hover:bg-teal-700 group-hover:text-white transition-colors shrink-0">
-                Select
-              </span>
+              {onSelectFacility ? (
+                <span className="text-[10px] font-bold text-teal-700 bg-teal-100 px-2 py-0.5 rounded group-hover:bg-teal-700 group-hover:text-white transition-colors shrink-0">
+                  Select
+                </span>
+              ) : (
+                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded shrink-0">
+                  OSM Verified
+                </span>
+              )}
             </div>
           ))}
         </div>
@@ -141,3 +149,4 @@ export function VerifiedHospitalLookup({ onSelectFacility }: VerifiedHospitalLoo
     </div>
   );
 }
+

@@ -95,3 +95,4 @@ export function disconnectHealthDevice(session: BluetoothDeviceSession | null): 
     session.device.gatt.disconnect();
   }
 }
+

@@ -8,12 +8,13 @@ export type TaskPriority = "low" | "medium" | "high" | "urgent";
 
 export type TaskStatus = "pending" | "in_progress" | "completed" | "cancelled" | "overdue";
 
-export type NotificationType = "adherence_alert" | "appointment_reminder" | "care_task_assigned" | "emergency";
+export type NotificationType = "adherence_alert" | "appointment_reminder" | "care_task_assigned" | "emergency" | "critical";
 
 export interface UserProfile {
   id: string;
   email: string;
   full_name: string;
+  name?: string;
   role: UserRole;
   phone?: string;
   avatar_url?: string;
@@ -23,6 +24,9 @@ export interface ElderlyProfile {
   id: string;
   user_id: string;
   full_name: string;
+  name?: string;
+  age?: number;
+  city?: string;
   date_of_birth?: string;
   blood_group?: string;
   emergency_contact_name: string;
@@ -79,6 +83,8 @@ export interface MedicationEvent {
   medication_id: string;
   medication_name?: string;
   dosage_quantity?: string;
+  dosage?: string;
+  taken_at?: string;
   elderly_id: string;
   scheduled_time: string; // ISO date string or formatted time
   recorded_time?: string;
@@ -92,11 +98,15 @@ export interface Appointment {
   elderly_id: string;
   doctor_name: string;
   clinic_or_hospital: string;
+  clinic_name?: string;
+  specialty?: string;
+  appointment_date?: string;
   appointment_time: string;
   purpose: string;
   status: AppointmentStatus;
   caretaker_id?: string;
   caretaker_name?: string;
+  accompanied_by?: string;
   notes?: string;
 }
 
@@ -107,9 +117,11 @@ export interface CareTask {
   assigned_name?: string;
   created_by?: string;
   title: string;
-  description: string;
+  description?: string;
   priority: TaskPriority;
   due_date?: string;
+  due_time?: string;
+  notes?: string;
   status: TaskStatus;
 }
 
@@ -120,6 +132,7 @@ export interface NotificationItem {
   type: NotificationType;
   title: string;
   message: string;
+  priority?: "urgent" | "high" | "medium" | "low";
   is_read: boolean;
   link?: string;
   created_at: string;
@@ -128,11 +141,14 @@ export interface NotificationItem {
 export interface ClinicalNote {
   id: string;
   elderly_id: string;
-  author_id: string;
+  author_id?: string;
   author_name?: string;
-  observation: string;
+  caretaker_name?: string;
+  observation?: string;
+  content?: string;
+  vitals_summary?: string;
   action_taken?: string;
-  follow_up_required: boolean;
+  follow_up_required?: boolean;
   follow_up_date?: string;
   related_appointment_id?: string;
   related_task_id?: string;
@@ -168,6 +184,7 @@ export interface FamilyInvitation {
   invited_by: string;
   relationship: string;
   can_edit_meds: boolean;
+  can_edit_medications?: boolean;
   token: string;
   status: "pending" | "accepted" | "rejected" | "revoked";
   created_at: string;
@@ -180,7 +197,10 @@ export interface ActivityLog {
   actor_id?: string;
   actor_name?: string;
   action_type: string;
+  action?: string;
   description: string;
+  details?: string;
+  user_id?: string;
   metadata?: Record<string, unknown>;
   created_at: string;
 }

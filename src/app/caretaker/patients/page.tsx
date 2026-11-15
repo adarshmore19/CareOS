@@ -46,7 +46,7 @@ export default function CaretakerPatientsPage() {
         </div>
 
         <Link
-          href="/caretaker"
+          href="/caretaker/dashboard"
           className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 font-semibold text-xs hover:bg-slate-50 transition-colors"
         >
           ← Back to Station

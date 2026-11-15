@@ -37,6 +37,15 @@ export function Navbar() {
 
   const unreadNotifs = notifications.filter((n) => !n.is_read);
 
+  // If inside any of the 3 dedicated independent dashboards, hide global navbar
+  if (
+    pathname?.startsWith("/patient") ||
+    pathname?.startsWith("/family") ||
+    pathname?.startsWith("/caretaker")
+  ) {
+    return null;
+  }
+
   const navLinks = [
     { name: "MediMate", href: "/medications", icon: Pill },
     { name: "FamilyCare", href: "/family", icon: Users },

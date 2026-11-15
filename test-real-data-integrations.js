@@ -10,10 +10,11 @@
  */
 
 const http = require("http");
+const PORT = process.argv[2] || 3000;
 
 function request(method, path, body = null, headers = {}) {
   return new Promise((resolve, reject) => {
-    const url = new URL(`http://localhost:3000${path}`);
+    const url = new URL(`http://127.0.0.1:${PORT}${path}`);
     const reqHeaders = {
       "Content-Type": "application/json",
       ...headers,
@@ -246,3 +247,4 @@ runRealDataTests().catch((err) => {
   console.error("Test execution threw exception:", err);
   process.exit(1);
 });
+

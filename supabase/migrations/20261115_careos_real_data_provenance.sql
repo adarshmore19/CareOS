@@ -112,3 +112,4 @@ CREATE POLICY "Family view linked patient device readings" ON device_readings
 
 CREATE POLICY "Caretaker view assigned patient device readings" ON device_readings
     FOR SELECT USING (elderly_id IN (SELECT elderly_id FROM caretaker_assignments WHERE caretaker_user_id = auth.uid()));
+

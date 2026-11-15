@@ -5,7 +5,7 @@ import { VerifiedDrug } from "@/lib/types";
 import { Search, Pill, ShieldCheck, ExternalLink, Loader2 } from "lucide-react";
 
 interface VerifiedMedicationLookupProps {
-  onSelectDrug: (drug: { name: string; dosage?: string; rxcui: string; source: string }) => void;
+  onSelectDrug?: (drug: { name: string; dosage?: string; rxcui: string; source: string }) => void;
 }
 
 export function VerifiedMedicationLookup({ onSelectDrug }: VerifiedMedicationLookupProps) {
@@ -90,11 +90,13 @@ export function VerifiedMedicationLookup({ onSelectDrug }: VerifiedMedicationLoo
             <div
               key={drug.rxcui}
               onClick={() => {
-                onSelectDrug({
-                  name: drug.name,
-                  rxcui: drug.rxcui,
-                  source: "NIH RxNorm Verified Database",
-                });
+                if (onSelectDrug) {
+                  onSelectDrug({
+                    name: drug.name,
+                    rxcui: drug.rxcui,
+                    source: "NIH RxNorm Verified Database",
+                  });
+                }
               }}
               className="p-2.5 rounded-xl bg-white border border-slate-200 hover:border-teal-500 hover:bg-teal-50/50 cursor-pointer transition-all flex items-start justify-between gap-3 group"
             >
@@ -108,9 +110,15 @@ export function VerifiedMedicationLookup({ onSelectDrug }: VerifiedMedicationLoo
                 </div>
               </div>
 
-              <span className="text-[10px] font-bold text-teal-700 bg-teal-100 px-2 py-0.5 rounded group-hover:bg-teal-700 group-hover:text-white transition-colors shrink-0">
-                Select
-              </span>
+              {onSelectDrug ? (
+                <span className="text-[10px] font-bold text-teal-700 bg-teal-100 px-2 py-0.5 rounded group-hover:bg-teal-700 group-hover:text-white transition-colors shrink-0">
+                  Select
+                </span>
+              ) : (
+                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded shrink-0">
+                  NIH Verified
+                </span>
+              )}
             </div>
           ))}
         </div>
@@ -118,3 +126,4 @@ export function VerifiedMedicationLookup({ onSelectDrug }: VerifiedMedicationLoo
     </div>
   );
 }
+
